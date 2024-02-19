@@ -26,9 +26,17 @@ export class PacketService {
     return packet;
   }
 
+  async getUserPackets(userId: string) {
+    return this.packetModel.find({user: userId});
+  }
+
   async refresh(id: string) {
     const packet = await this.findById(id);
 
-    await this.correiosService.trackObject(packet.code);
+    const history = await this.correiosService.fetchHistory(packet.code);
+
+    packet.history = history;
+
+    return packet.save();
   }
 }

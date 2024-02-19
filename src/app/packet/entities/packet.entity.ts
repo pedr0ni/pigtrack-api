@@ -1,5 +1,7 @@
 import {Prop, Schema, SchemaFactory} from '@nestjs/mongoose';
-import {HydratedDocument, now} from 'mongoose';
+import {HydratedDocument, SchemaTypes, Types, now} from 'mongoose';
+import {PacketHistory, PacketHistorySchema} from './packet-history.entity';
+import {User} from 'src/app/user/entities/user.entity';
 
 export type PacketDocument = HydratedDocument<Packet>;
 
@@ -10,6 +12,12 @@ export class Packet {
 
   @Prop()
   name: string;
+
+  @Prop({type: SchemaTypes.ObjectId, ref: User.name})
+  user: Types.ObjectId;
+
+  @Prop({type: [PacketHistorySchema]})
+  history: PacketHistory[];
 
   @Prop({default: now()})
   createdAt: Date;
