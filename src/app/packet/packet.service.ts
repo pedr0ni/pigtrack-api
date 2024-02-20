@@ -4,6 +4,7 @@ import {InjectModel} from '@nestjs/mongoose';
 import {Packet} from './entities/packet.entity';
 import {Model} from 'mongoose';
 import {CorreiosService} from 'src/infra/correios/correios.service';
+import {RefreshAllDto} from './dto/refresh-all.dto';
 
 @Injectable()
 export class PacketService {
@@ -14,6 +15,10 @@ export class PacketService {
 
   create(body: CreatePacketDto) {
     return this.packetModel.create(body);
+  }
+
+  findAll() {
+    return this.packetModel.find();
   }
 
   async findById(id: string) {
@@ -38,5 +43,19 @@ export class PacketService {
     packet.history = history;
 
     return packet.save();
+  }
+
+  async refreshAll(body: RefreshAllDto) {
+    const packets = await this.packetModel.find({_id: {$in: body.packets}});
+
+    for (const packet of packets) {
+      const history = await this.correiosService.fetchHistory(packet.code);
+
+      packet.history = history;
+
+      await packet.save();
+    }
+
+    return packets;
   }
 }
