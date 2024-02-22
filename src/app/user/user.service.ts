@@ -51,7 +51,7 @@ export class UserService {
   }
 
   async login(body: LoginDto) {
-    const user = (await this.userModel.findOne({email: body.email})).toObject();
+    const user = await this.userModel.findOne({email: body.email});
 
     if (!user) {
       throw new NotFoundException('Esse usuário não existe.');
@@ -64,8 +64,8 @@ export class UserService {
     }
 
     return {
-      ...user,
-      accessToken: this.jwtService.sign(user),
+      ...user.toObject(),
+      accessToken: this.jwtService.sign(user.toObject()),
     };
   }
 }
