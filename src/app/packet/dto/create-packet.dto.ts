@@ -1,5 +1,5 @@
 import {ApiProperty} from '@nestjs/swagger';
-import {IsMongoId, IsNotEmpty, IsString} from 'class-validator';
+import {IsNotEmpty, IsString} from 'class-validator';
 
 export class CreatePacketDto {
   @ApiProperty()
@@ -11,9 +11,4 @@ export class CreatePacketDto {
   @IsString()
   @IsNotEmpty()
   name: string;
-
-  @ApiProperty()
-  @IsMongoId()
-  @IsNotEmpty()
-  user: string;
 }

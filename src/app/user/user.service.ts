@@ -10,12 +10,14 @@ import {Model} from 'mongoose';
 import * as bcrypt from 'bcrypt';
 import {LoginDto} from './dto/login.dto';
 import {PacketService} from '../packet/packet.service';
+import {JwtService} from '@nestjs/jwt';
 
 @Injectable()
 export class UserService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
-    private readonly packetService: PacketService
+    private readonly packetService: PacketService,
+    private readonly jwtService: JwtService
   ) {}
 
   findAll() {
@@ -49,7 +51,7 @@ export class UserService {
   }
 
   async login(body: LoginDto) {
-    const user = await this.userModel.findOne({email: body.email});
+    const user = (await this.userModel.findOne({email: body.email})).toObject();
 
     if (!user) {
       throw new NotFoundException('Esse usuário não existe.');
@@ -61,6 +63,9 @@ export class UserService {
       throw new UnauthorizedException('E-mail ou senha incorreto(s)...');
     }
 
-    return user;
+    return {
+      ...user,
+      accessToken: this.jwtService.sign(user),
+    };
   }
 }

@@ -1,8 +1,9 @@
-import {Body, Controller, Get, Param, Post} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, UseGuards} from '@nestjs/common';
 import {ApiTags} from '@nestjs/swagger';
 import {CreateUserDto} from './dto/create-user.dto';
 import {UserService} from './user.service';
 import {LoginDto} from './dto/login.dto';
+import {JwtAuthGuard} from 'src/infra/auth/auth.guard';
 
 @Controller('user')
 @ApiTags('user')
@@ -20,6 +21,7 @@ export class UserController {
   }
 
   @Get(':id/packets')
+  @UseGuards(JwtAuthGuard)
   getPackets(@Param('id') id: string) {
     return this.userService.getPackets(id);
   }

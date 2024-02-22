@@ -5,6 +5,7 @@ import {Packet} from './entities/packet.entity';
 import {Model} from 'mongoose';
 import {CorreiosService} from 'src/infra/correios/correios.service';
 import {RefreshAllDto} from './dto/refresh-all.dto';
+import {User} from '../user/entities/user.entity';
 
 @Injectable()
 export class PacketService {
@@ -13,8 +14,9 @@ export class PacketService {
     private readonly correiosService: CorreiosService
   ) {}
 
-  create(body: CreatePacketDto) {
-    return this.packetModel.create(body);
+  async create(body: CreatePacketDto, user: User) {
+    const history = await this.correiosService.fetchHistory(body.code);
+    return this.packetModel.create({...body, history, user: user._id});
   }
 
   findAll() {
