@@ -24,6 +24,11 @@ export class PacketController {
     return this.packetService.findAll();
   }
 
+  @Get(':id')
+  findById(@Param('id') id: string) {
+    return this.packetService.findById(id);
+  }
+
   @Post(':id/refresh')
   refreshPacket(@Param('id') id: string) {
     return this.packetService.refresh(id);
